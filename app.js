@@ -1,35 +1,29 @@
 // ============================================
-// CONFIGURATION SECTION - EDIT VALUES HERE
+// CONFIGURATION SECTION
+// Configuration is loaded from environment variables via config.js
 // ============================================
 
 const CONFIG = {
-    // Search Configuration
-    hitsPerPage: 18,  // Number of results to show per page
-
-    // Index 1 Configuration
+    hitsPerPage: parseInt(window.ENV_CONFIG.hitsPerPage) || 18,
     index1: {
-        appId: 'HWJ52H4D98',
-        apiKey: 'acf4472d88acbb00d11d755012189218',
-        indexName: 'product_catalog',
-        searchMode: 'keyword'  // Options: 'keyword' or 'neural'
+        appId: window.ENV_CONFIG.index1.appId,
+        apiKey: window.ENV_CONFIG.index1.apiKey,
+        indexName: window.ENV_CONFIG.index1.indexName,
+        searchMode: window.ENV_CONFIG.index1.searchMode
     },
-
-    // Index 2 Configuration
     index2: {
-        appId: 'T3J6BKODKM',
-        apiKey: '85be8167f9237efc6997e81f8af59f73',
-        indexName: 'demo_rot_ns',
-        searchMode: 'neural'  // Options: 'keyword' or 'neural'
+        appId: window.ENV_CONFIG.index2.appId,
+        apiKey: window.ENV_CONFIG.index2.apiKey,
+        indexName: window.ENV_CONFIG.index2.indexName,
+        searchMode: window.ENV_CONFIG.index2.searchMode
     },
-
-    // Hit Card Attributes Configuration
     attributes: {
-        titleAttr: 'title',      // Attribute to use for the card title
-        imageAttr: 'lifestyleImage',     // Attribute to use for the card image
-        field1Attr: 'product-style',    // Attribute to use for field 1
-        field1Label: 'Style',   // Display label for field 1
-        field2Attr: 'brand', // Attribute to use for field 2
-        field2Label: 'Brand' // Display label for field 2
+        titleAttr: window.ENV_CONFIG.attributes.titleAttr,
+        imageAttr: window.ENV_CONFIG.attributes.imageAttr,
+        field1Attr: window.ENV_CONFIG.attributes.field1Attr,
+        field1Label: window.ENV_CONFIG.attributes.field1Label,
+        field2Attr: window.ENV_CONFIG.attributes.field2Attr,
+        field2Label: window.ENV_CONFIG.attributes.field2Label
     }
 };
 
