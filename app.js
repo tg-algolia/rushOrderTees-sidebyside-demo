@@ -1,48 +1,83 @@
 // ============================================
-// CONFIGURATION SECTION - EDIT VALUES HERE
+// CONFIGURATION SECTION
 // ============================================
 
-const CONFIG = {
-    // Search Configuration
-    hitsPerPage: 18,  // Number of results to show per page
-
-    // Index 1 Configuration
-    index1: {
-        appId: 'HWJ52H4D98',
-        apiKey: 'acf4472d88acbb00d11d755012189218',
-        indexName: 'product_catalog',
-        searchMode: 'keyword'  // Options: 'keyword' or 'neural'
-    },
-
-    // Index 2 Configuration
-    index2: {
-        appId: 'T3J6BKODKM',
-        apiKey: '85be8167f9237efc6997e81f8af59f73',
-        indexName: 'demo_rot_ns',
-        searchMode: 'neural'  // Options: 'keyword' or 'neural'
-    },
-
-    // Hit Card Attributes Configuration
-    attributes: {
-        titleAttr: 'title',      // Attribute to use for the card title
-        imageAttr: 'lifestyleImage',     // Attribute to use for the card image
-        field1Attr: 'product-style',    // Attribute to use for field 1
-        field1Label: 'Style',   // Display label for field 1
-        field2Attr: 'brand', // Attribute to use for field 2
-        field2Label: 'Brand' // Display label for field 2
-    }
-};
-
-// ============================================
-// END CONFIGURATION SECTION
-// ============================================
-
+let CONFIG = null;
 let search1 = null;
 let search2 = null;
 
-// Initialize search on page load
-document.addEventListener('DOMContentLoaded', () => {
-    initializeSearch();
+// Load configuration from Netlify function or fallback to local config
+async function loadConfig() {
+    try {
+        // Try to load from Netlify function first (production)
+        const response = await fetch('/.netlify/functions/config');
+        if (response.ok) {
+            const envConfig = await response.json();
+            return {
+                hitsPerPage: parseInt(envConfig.HITS_PER_PAGE) || 18,
+                index1: {
+                    appId: envConfig.INDEX1_APP_ID,
+                    apiKey: envConfig.INDEX1_API_KEY,
+                    indexName: envConfig.INDEX1_INDEX_NAME,
+                    searchMode: envConfig.INDEX1_SEARCH_MODE
+                },
+                index2: {
+                    appId: envConfig.INDEX2_APP_ID,
+                    apiKey: envConfig.INDEX2_API_KEY,
+                    indexName: envConfig.INDEX2_INDEX_NAME,
+                    searchMode: envConfig.INDEX2_SEARCH_MODE
+                },
+                attributes: {
+                    titleAttr: envConfig.TITLE_ATTR,
+                    imageAttr: envConfig.IMAGE_ATTR,
+                    field1Attr: envConfig.FIELD1_ATTR,
+                    field1Label: envConfig.FIELD1_LABEL,
+                    field2Attr: envConfig.FIELD2_ATTR,
+                    field2Label: envConfig.FIELD2_LABEL
+                }
+            };
+        }
+        throw new Error('Netlify function not available');
+    } catch (error) {
+        // Fallback to local config (development)
+        if (window.ENV_CONFIG) {
+            return {
+                hitsPerPage: parseInt(window.ENV_CONFIG.HITS_PER_PAGE) || 18,
+                index1: {
+                    appId: window.ENV_CONFIG.INDEX1_APP_ID,
+                    apiKey: window.ENV_CONFIG.INDEX1_API_KEY,
+                    indexName: window.ENV_CONFIG.INDEX1_INDEX_NAME,
+                    searchMode: window.ENV_CONFIG.INDEX1_SEARCH_MODE
+                },
+                index2: {
+                    appId: window.ENV_CONFIG.INDEX2_APP_ID,
+                    apiKey: window.ENV_CONFIG.INDEX2_API_KEY,
+                    indexName: window.ENV_CONFIG.INDEX2_INDEX_NAME,
+                    searchMode: window.ENV_CONFIG.INDEX2_SEARCH_MODE
+                },
+                attributes: {
+                    titleAttr: window.ENV_CONFIG.TITLE_ATTR,
+                    imageAttr: window.ENV_CONFIG.IMAGE_ATTR,
+                    field1Attr: window.ENV_CONFIG.FIELD1_ATTR,
+                    field1Label: window.ENV_CONFIG.FIELD1_LABEL,
+                    field2Attr: window.ENV_CONFIG.FIELD2_ATTR,
+                    field2Label: window.ENV_CONFIG.FIELD2_LABEL
+                }
+            };
+        }
+        throw error;
+    }
+}
+
+// Initialize app on page load
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        CONFIG = await loadConfig();
+        initializeSearch();
+    } catch (error) {
+        console.error('Failed to load configuration:', error);
+        alert('Failed to load configuration. Please check your setup.');
+    }
 });
 
 function initializeSearch() {
